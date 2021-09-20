@@ -83,34 +83,38 @@ def create_app():
         track = request.get_data('track')
 
         if track:
-            # WHY MUST SCREW ME LIKE THIS
-            track = str(track).split('=')[1][:-1]
-            # ^^^ ACTUAL CRINGE ^^^
+            try:
+                # WHY MUST SCREW ME LIKE THIS
+                track = str(track).split('=')[1][:-1]
+                # ^^^ ACTUAL CRINGE ^^^
 
-            r = requests.get(BASE_URL + 'audio-features/' + track,
-                headers=headers)
-            song_dict = r.json()
+                r = requests.get(BASE_URL + 'audio-features/' + track,
+                    headers=headers)
+                song_dict = r.json()
+                print(song_dict)
 
-            query_nn = np.array([song_dict[x] for x in df.columns])
+                query_nn = np.array([song_dict[x] for x in df.columns])
 
-            api_similar = neigh.kneighbors(scaler.transform([query_nn]),
-                5, return_distance=False)
-            query_results = songs_df.loc[api_similar[0]]['uri']
+                api_similar = neigh.kneighbors(scaler.transform(
+                    [query_nn]), 5, return_distance=False)
+                query_results = songs_df.loc[api_similar[0]]['uri']
 
-            links = query_results.apply(
-                lambda x: 'https://open.spotify.com/track/' + x[14:]
-            )
+                links = query_results.apply(
+                    lambda x: 'https://open.spotify.com/track/' + x[14:]
+                )
 
-            linky = links.values
+                linky = links.values
 
-            template = """            <li><a href=\"{link}\">{link}\
+                template = """            <li><a href=\"{link}\">{link}\
 </a></li>
 """
-            blank = """"""
-            for link in linky:
-                blank += template.format(link=link)
+                blank = """"""
+                for link in linky:
+                    blank += template.format(link=link)
+            except:
+                blank = """            <p>Invalid Track ID</p>"""
         else:
-            linky = """            <p>Similar songs will go here</p>"""
+            blank = """            <p>Similar songs will go here</p>"""
 
         return suggestHTML.format(blank)
 
