@@ -46,7 +46,7 @@ def query_nn_pickles(song_features):
     knn = pickle.load(open('knn.pkl', 'rb'))
     # scale features
     scaled = sclr.transform([song_features])
-    print(scaled)
+    # print(scaled)
     # get 5 nearest neighbors, returns a list of dataframe indices
     similar_five = knn.kneighbors(scaled, 5, return_distance=False)
 
