@@ -14,7 +14,11 @@
         </form>
 
         <h2>Results</h2>
-        <p>{{ linky }}</p>
-
+        <ol>
+            {{% for link in linky %}}
+            <li><a href="{{link}}">{{link}}</a></li>
+            {{% endfor %}}
+        </ol>
+        
     </body>
 </html>

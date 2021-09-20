@@ -41,6 +41,30 @@ scaler = StandardScaler()
 scaler.fit(df)
 
 
+suggestHTML = """<html>
+    <head>
+        <title>Test Suggestor</title>
+    </head>
+    <body>
+        
+        <h1>Test Suggestor</h1>
+        <h3><a href="/">Home</a></h3>
+
+        <form action="/song_suggestor", method="POST">
+            <p>Track ID:</p>
+            <input type="text" name="track">
+            <input type="submit" value="Submit">
+        </form>
+
+        <h2>Results</h2>
+        <ol>
+{}
+        </ol>
+        
+    </body>
+</html>"""
+
+
 def create_app():
     """Create App"""
 
@@ -59,23 +83,58 @@ def create_app():
         track = request.get_data('track')
 
         if track:
-            r = requests.get(BASE_URL + 'audio-features/' + str(track),
+            # WHY MUST SCREW ME LIKE THIS
+            track = str(track).split('=')[1][:-1]
+            # ^^^ ACTUAL CRINGE ^^^
+
+            r = requests.get(BASE_URL + 'audio-features/' + track,
                 headers=headers)
             song_dict = r.json()
 
             query_nn = np.array([song_dict[x] for x in df.columns])
 
-            api_similars = neigh.kneighbors(scaler.tranform([query_nn]),
+            api_similar = neigh.kneighbors(scaler.transform([query_nn]),
                 5, return_distance=False)
-            query_results = songs_df.loc[api_similars[0]]['uri']
+            query_results = songs_df.loc[api_similar[0]]['uri']
 
             links = query_results.apply(
                 lambda x: 'https://open.spotify.com/track/' + x[14:]
             )
-        else:
-            linky = "Similar songs will go here"
 
-        return render_template('testsuggestor.html', linky=linky)
+            linky = links.values
+
+            template = """            <li><a href=\"{link}\">{link}\
+</a></li>
+"""
+            blank = """"""
+            for link in linky:
+                blank += template.format(link=link)
+        else:
+            linky = """            <p>Similar songs will go here</p>"""
+
+        return suggestHTML.format(blank)
 
 
     return app
+
+if __name__ == '__main__':
+    # PAIN
+    track = '1p80LdxRV74UKvL8gnD7ky'
+
+    r = requests.get(BASE_URL + 'audio-features/' + track,
+        headers=headers)
+    song_dict = r.json()
+
+    query_nn = np.array([song_dict[x] for x in df.columns])
+
+    api_similars = neigh.kneighbors(scaler.transform([query_nn]),
+        5, return_distance=False)
+    query_results = songs_df.loc[api_similars[0]]['uri']
+
+    links = query_results.apply(
+        lambda x: 'https://open.spotify.com/track/' + x[14:]
+    )
+
+    linky = links.values
+
+    print(linky)
