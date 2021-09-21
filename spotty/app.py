@@ -56,11 +56,10 @@ def create_app():
         if link:
             try:
                 # WHY MUST IT SCREW ME LIKE THIS
-                link = str(link)[41:63]
+                link = str(link)[48:70]
                 # ^^^ ACTUAL CRINGE ^^^
 
                 links = recomend(link)
-                print(links)
 
                 template = """            <li><a href=\"{link}\">{link}\
 </a></li>
