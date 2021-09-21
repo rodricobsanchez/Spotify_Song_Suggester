@@ -1,0 +1,24 @@
+<html>
+    <head>
+        <title>Test Suggestor</title>
+    </head>
+    <body>
+        
+        <h1>Test Suggestor</h1>
+        <h3><a href="/">Home</a></h3>
+
+        <form action="/song_suggestor", method="POST">
+            <p>Track ID:</p>
+            <input type="text" name="track">
+            <input type="submit" value="Submit">
+        </form>
+
+        <h2>Results</h2>
+        <ol>
+            {{% for link in linky %}}
+            <li><a href="{{link}}">{{link}}</a></li>
+            {{% endfor %}}
+        </ol>
+        
+    </body>
+</html>
