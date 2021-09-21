@@ -4,41 +4,13 @@ Robert & Rodrico
 2021/09/20"""
 
 
+from .recomend import get_nn_query, query_nn_pickles, recomend
 from flask import Flask, render_template, request
-from sklearn.preprocessing import StandardScaler
-from sklearn.neighbors import NearestNeighbors
-from dotenv import load_dotenv
 import pandas as pd
 import numpy as np
 import requests
 import pickle
 import os
-
-
-load_dotenv()
-neigh = pickle.load(open('spotty_model', 'rb'))
-
-
-AUTH_URL = 'https://accounts.spotify.com/api/token'
-auth_response = requests.post(AUTH_URL, {
-    'grant_type': 'client_credentials',
-    'client_id': os.getenv('CLIENT_ID'),
-    'client_secret': os.getenv('CLIENT_SECRET')
-})
-auth_response_data = auth_response.json()
-access_token = auth_response_data['access_token']
-headers = {
-    'Authorization': f'Bearer {access_token}'
-}
-BASE_URL = 'https://api.spotify.com/v1/'
-
-
-songs_df = pd.read_csv('genres_v2.csv')
-df = pd.read_csv('updated.csv')
-
-
-scaler = StandardScaler()
-scaler.fit(df)
 
 
 suggestHTML = """<html>
@@ -51,8 +23,8 @@ suggestHTML = """<html>
         <h3><a href="/">Home</a></h3>
 
         <form action="/song_suggestor", method="POST">
-            <p>Track ID:</p>
-            <input type="text" name="track">
+            <p>Song Link:</p>
+            <input type="text" name="link">
             <input type="submit" value="Submit">
         </form>
 
@@ -80,36 +52,21 @@ def create_app():
     @app.route('/song_suggestor', methods=['GET', 'POST'])
     def song_suggestor():
         """Create a suggestor route"""
-        track = request.get_data('track')
-
-        if track:
+        link = request.get_data('link')
+        if link:
             try:
-                # WHY MUST SCREW ME LIKE THIS
-                track = str(track).split('=')[1][:-1]
+                # WHY MUST IT SCREW ME LIKE THIS
+                link = str(link)[41:63]
                 # ^^^ ACTUAL CRINGE ^^^
 
-                r = requests.get(BASE_URL + 'audio-features/' + track,
-                    headers=headers)
-                song_dict = r.json()
-                print(song_dict)
-
-                query_nn = np.array([song_dict[x] for x in df.columns])
-
-                api_similar = neigh.kneighbors(scaler.transform(
-                    [query_nn]), 5, return_distance=False)
-                query_results = songs_df.loc[api_similar[0]]['uri']
-
-                links = query_results.apply(
-                    lambda x: 'https://open.spotify.com/track/' + x[14:]
-                )
-
-                linky = links.values
+                links = recomend(link)
+                print(links)
 
                 template = """            <li><a href=\"{link}\">{link}\
 </a></li>
 """
                 blank = """"""
-                for link in linky:
+                for link in links:
                     blank += template.format(link=link)
             except:
                 blank = """            <p>Invalid Track ID</p>"""
@@ -120,25 +77,3 @@ def create_app():
 
 
     return app
-
-if __name__ == '__main__':
-    # PAIN
-    track = '1p80LdxRV74UKvL8gnD7ky'
-
-    r = requests.get(BASE_URL + 'audio-features/' + track,
-        headers=headers)
-    song_dict = r.json()
-
-    query_nn = np.array([song_dict[x] for x in df.columns])
-
-    api_similars = neigh.kneighbors(scaler.transform([query_nn]),
-        5, return_distance=False)
-    query_results = songs_df.loc[api_similars[0]]['uri']
-
-    links = query_results.apply(
-        lambda x: 'https://open.spotify.com/track/' + x[14:]
-    )
-
-    linky = links.values
-
-    print(linky)
