@@ -1,23 +1,34 @@
 <html>
     <head>
         <title>Test Suggestor</title>
+        <link rel="stylesheet" href="styles.css">
+        <style type="text/css">
+        html {
+            text-align: center;
+            color:white;
+        }
+        body {
+            background-image: url(static/background.jpg);
+            background-color: #cccccc;
+            background-size: cover;
+            background-position: center;
+        }
+        </style>
     </head>
     <body>
         
         <h1>Test Suggestor</h1>
-        <h3><a href="/">Home</a></h3>
 
         <form action="/song_suggestor", method="POST">
             <p>Song Link:</p>
             <input type="text" name="link">
             <input type="submit" value="Submit">
         </form>
+        <p>{{ message }}</p>
 
         <h2>Results</h2>
         <ol>
-            {{% for link in linky %}}
-            <li><a href="{{link}}">{{link}}</a></li>
-            {{% endfor %}}
+            
         </ol>
         
     </body>

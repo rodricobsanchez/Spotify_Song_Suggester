@@ -13,29 +13,6 @@ import pickle
 import os
 
 
-suggestHTML = """<html>
-    <head>
-        <title>Test Suggestor</title>
-    </head>
-    <body>
-        
-        <h1>Test Suggestor</h1>
-
-        <form action="/", method="POST">
-            <p>Song Link:</p>
-            <input type="text" name="link">
-            <input type="submit" value="Submit">
-        </form>
-
-        <h2>Results</h2>
-        <ol>
-{}
-        </ol>
-        
-    </body>
-</html>"""
-
-
 def create_app():
     """Create App"""
 
@@ -53,18 +30,15 @@ def create_app():
 
                 links = recomend(link)
 
-                template = """            <li><a href=\"{link}\">{link}\
-</a></li>
-"""
-                blank = """"""
-                for link in links:
-                    blank += template.format(link=link)
+                message = 'Valid Link'
             except:
-                blank = """            <p>Invalid Song Link</p>"""
+                message = 'Invalid Link'
         else:
-            blank = """            <p>Similar songs will go here</p>"""
+            links = []
+            message = ''
 
-        return suggestHTML.format(blank)
+        return render_template('testsuggestor.html',
+            links=links, message=message)
 
 
     return app
