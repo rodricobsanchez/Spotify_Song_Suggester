@@ -30,11 +30,14 @@
             <input type="submit" value="Submit">
         </form>
         <p>{{ message }}</p>
+        {% for attribute in attr %}
+        <p>{{attribute}}</p>
+        {% endfor %}
 
         <h2>Results</h2>
         <ul>
-        {% for link in links %}
-            <li><a href="{{link}}">{{link}}</a></li>
+        {% for entry in links %}
+            <li><a href="{{entry[2]}}">{{entry[1]}}</a> by {{entry[0]}}</li>
         {% endfor %}
         </ul>
         
