@@ -3,9 +3,9 @@ import pickle
 import requests
 
 from sklearn.neighbors import NearestNeighbors
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import Normalizer
 
-df = pd.read_csv('clean_genres.csv', index_col=0)
+df = pd.read_csv('spotifyupload.csv', index_col=0)
 q_df = df.drop(columns=['uri'])
 
 CLIENT_ID = 'ffd61f80a4dd4d7c8fc0c289d994fec0'
@@ -32,9 +32,13 @@ def get_nn_query(track_id):
     headers = {'Authorization': 'Bearer {token}'.format(token=access_token)}
     r = requests.get('https://api.spotify.com/v1/audio-features/' + track_id, headers=headers)
     song_dict = r.json()
-
+    
+    feature_columns = ['acousticness', 'danceability', 'duration_ms', 'energy',
+       'instrumentalness', 'liveness', 'loudness', 'speechiness', 'tempo',
+       'valence']
+    
     # put audio attributes in same order as in the dataframe the estimator is fit to.
-    query_nn = [song_dict[x] for x in q_df.columns]
+    query_nn = [song_dict[x] for x in feature_columns]
 
     return query_nn
 
@@ -42,13 +46,13 @@ def get_nn_query(track_id):
 def query_nn_pickles(song_features):
     """Load pickles, scale song_features, return 5 nearest neighbors."""
     # load pkls from current directory
-    sclr = pickle.load(open('sclr.pkl', 'rb'))
-    knn = pickle.load(open('knn.pkl', 'rb'))
+    norm = pickle.load(open('norm.pkl', 'rb'))
+    knn = pickle.load(open('NN.pkl', 'rb'))
     # scale features
-    scaled = sclr.transform([song_features])
+    normed = norm.transform([song_features])
     # print(scaled)
     # get 5 nearest neighbors, returns a list of dataframe indices
-    similar_five = knn.kneighbors(scaled, 5, return_distance=False)
+    similar_five = knn.kneighbors(normed, 5, return_distance=False)
 
     return similar_five
 
@@ -63,8 +67,6 @@ def recomend(song_link):
     similar_songs = query_nn_pickles(features)
 
     # create links to spotify songs
-    query_results = df.loc[similar_songs[0]]['uri']
-    links = query_results.apply(
-        lambda x: 'https://open.spotify.com/track/' + x[14:]).values
-
+    query_results = df.loc[similar_songs[0]]['url']
+    links = query_results.tolist()
     return links
