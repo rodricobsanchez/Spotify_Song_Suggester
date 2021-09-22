@@ -1,7 +1,7 @@
 # Spotify Song Suggester
 
 ## Heroku App
-[Spotify Song Suggestor](https://id.heroku.com/login)
+[Spotify Song Suggestor](https://glacial-stream-73052.herokuapp.com)
 
 ## Description
 An app that connects users to new music based on their previous music taste.  Our app will allow a user to input one of Spotify's 5 million song choices and will return 5 similar songs the user may like along with song metrics for the chosen song and graphs to visualize similarity.  
