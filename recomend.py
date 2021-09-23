@@ -72,7 +72,7 @@ def recomend(uri):
     # create links to spotify songs
     query_results = df.loc[similar_songs[0]]['url']
     art_tracks = df.loc[similar_songs[0]][['artist_name', 'track_name']].values
-    links = query_results.tolist()]
+    links = query_results.tolist()
     # Wraps them together [artist, title, link]
     recommends = [[
         art_tracks[x][0], art_tracks[x][1],
