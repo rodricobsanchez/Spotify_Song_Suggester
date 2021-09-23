@@ -1,9 +1,13 @@
 import pandas as pd
 import pickle
 import requests
+import os
 
 from sklearn.neighbors import NearestNeighbors
 from sklearn.preprocessing import Normalizer
+
+import plotly.express as px
+from plotly.offline import plot
 
 df = pd.read_csv('spotifyupload.csv', index_col=0)
 
