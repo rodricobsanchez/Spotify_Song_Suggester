@@ -77,7 +77,7 @@ def recomend(uri):
     recommends = [[
         art_tracks[x][0], art_tracks[x][1],
         links[x]] for x in range(5)]
-    return recommends
+    return recommends, features
 
 
 def make_graph(share_link, image_name, kind='png'):

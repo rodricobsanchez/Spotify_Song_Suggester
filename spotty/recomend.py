@@ -38,7 +38,6 @@ def get_nn_query(track_id):
     
     # put audio attributes in same order as in the dataframe the estimator is fit to.
     query_nn = [song_dict[x] for x in feature_columns]
-    print(query_nn)
 
     return query_nn
 
