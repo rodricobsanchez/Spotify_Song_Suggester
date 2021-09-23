@@ -70,3 +70,30 @@ def recomend(song_link):
     art_tracks = df.loc[similar_songs[0]][['artist_name', 'track_name']].values
     links = query_results.tolist()
     return links, art_tracks
+
+
+def make_graph(share_link, image_name, kind='png'):
+    """Takes spotify share-link, export type, creates a png in an images folder, or a html div"""
+    uri = share_link[31:53]
+    # get song features
+    song_features = get_nn_query(uri)
+    # scale to [0,1]
+    normed = norm.transform([song_features])
+    # put in a df as expected by plotly
+    dfq = pd.DataFrame(dict(r=normed[0], theta=feature_columns))
+    # a polar plot
+    fig = px.line_polar(dfq, r='r', theta='theta', line_close=True)
+    # look nice plot
+    fig.update_polars(radialaxis_showticklabels=False, radialaxis_showgrid=False)
+    fig.update_traces(fill='toself')
+    # if kwarg is 'div' return a div which can be put in an html doc
+    if kind == 'div':
+        plt_div = plot(fig, output_type='div', include_plotlyjs=False)
+        return plt_div
+    # default kwarg 'png' save png to an images folder, create one if none exist
+    if kind == 'png':
+        if not os.path.exists("images"):
+            os.mkdir("images")
+        
+        fig.write_image(f"images/{image_name}.png", width=300, height=300)
+        return None
