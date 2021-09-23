@@ -18,10 +18,13 @@
             margin-left: -40px;
             list-style: none;
         }
+        div {
+            background: rgba(150, 150, 150, .3);
+        }
         </style>
     </head>
     <body>
-        
+        <div>
         <h1>Spotify Song Suggestor</h1>
 
         <form action="/", method="POST">
@@ -30,6 +33,13 @@
             <input type="submit" value="Submit">
         </form>
         <p>{{ message }}</p>
+
+        {% if song %}
+        <h3><a href="{{song['url']}}">{{song['name']}}</a></h3>
+        <img src="{{song['imageurl']}}" alt="album thumbnail">
+        <p>{{song['album']}} by {{song['artist']}}, {{song['release']}}</p>
+        {% endif %}
+
         {% for attribute in attr %}
         <p>{{attribute}}</p>
         {% endfor %}
@@ -40,6 +50,7 @@
             <li><a href="{{entry[2]}}">{{entry[1]}}</a> by {{entry[0]}}</li>
         {% endfor %}
         </ul>
+        </div>
         
     </body>
 </html>
