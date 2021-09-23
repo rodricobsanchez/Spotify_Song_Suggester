@@ -14,6 +14,13 @@ df = pd.read_csv('spotifyupload.csv', index_col=0)
 CLIENT_ID = 'ffd61f80a4dd4d7c8fc0c289d994fec0'
 CLIENT_SECRET = '4d2e3a2dc89c45be83eaa5083b9b1b48'
 
+norm = pickle.load(open('norm.pkl', 'rb'))
+knn = pickle.load(open('NN.pkl', 'rb'))
+
+feature_columns = ['acousticness', 'danceability', 'duration_ms', 'energy',
+       'instrumentalness', 'liveness', 'loudness', 'speechiness', 'tempo',
+       'valence']
+
 
 def get_nn_query(track_id):
     """Get spotify request for song audio-features, format it for query_nn()."""
@@ -36,10 +43,6 @@ def get_nn_query(track_id):
     r = requests.get('https://api.spotify.com/v1/audio-features/' + track_id, headers=headers)
     song_dict = r.json()
     
-    feature_columns = ['acousticness', 'danceability', 'duration_ms', 'energy',
-       'instrumentalness', 'liveness', 'loudness', 'speechiness', 'tempo',
-       'valence']
-    
     # put audio attributes in same order as in the dataframe the estimator is fit to.
     query_nn = [song_dict[x] for x in feature_columns]
 
@@ -48,9 +51,6 @@ def get_nn_query(track_id):
 
 def query_nn_pickles(song_features):
     """Load pickles, scale song_features, return 5 nearest neighbors."""
-    # load pkls from current directory
-    norm = pickle.load(open('norm.pkl', 'rb'))
-    knn = pickle.load(open('NN.pkl', 'rb'))
     # scale features
     normed = norm.transform([song_features])
     # print(scaled)
