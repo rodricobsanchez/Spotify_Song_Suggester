@@ -60,10 +60,10 @@ def query_nn_pickles(song_features):
     return similar_five
 
 
-def recomend(song_link):
+def recomend(uri):
     """Take song_link, return 5 similar songs from dataframe."""
     # Slice uri out of spotify share link
-    uri = song_link[31:53]
+    # uri = song_link[31:53]
     # Request song audio-features and format them for nearest-neighbors query
     features = get_nn_query(uri)
     # get nearest neighbors
@@ -72,8 +72,12 @@ def recomend(song_link):
     # create links to spotify songs
     query_results = df.loc[similar_songs[0]]['url']
     art_tracks = df.loc[similar_songs[0]][['artist_name', 'track_name']].values
-    links = query_results.tolist()
-    return links, art_tracks
+    links = query_results.tolist()]
+    # Wraps them together [artist, title, link]
+    recommends = [[
+        art_tracks[x][0], art_tracks[x][1],
+        links[x]] for x in range(5)]
+    return recommends
 
 
 def make_graph(share_link, image_name, kind='png'):
