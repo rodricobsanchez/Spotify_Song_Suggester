@@ -1,9 +1,13 @@
 import pandas as pd
 import pickle
 import requests
+import os
 
 from sklearn.neighbors import NearestNeighbors
 from sklearn.preprocessing import Normalizer
+
+import plotly.express as px
+from plotly.offline import plot
 
 df = pd.read_csv('spotifyupload.csv', index_col=0)
 
@@ -68,10 +72,36 @@ def recomend(uri):
     # create links to spotify songs
     query_results = df.loc[similar_songs[0]]['url']
     art_tracks = df.loc[similar_songs[0]][['artist_name', 'track_name']].values
-    links = query_results.tolist()
-    
+    links = query_results.tolist()]
     # Wraps them together [artist, title, link]
     recommends = [[
         art_tracks[x][0], art_tracks[x][1],
         links[x]] for x in range(5)]
     return recommends
+
+
+def make_graph(share_link, image_name, kind='png'):
+    """Takes spotify share-link, export type, creates a png in an images folder, or a html div"""
+    uri = share_link[31:53]
+    # get song features
+    song_features = get_nn_query(uri)
+    # scale to [0,1]
+    normed = norm.transform([song_features])
+    # put in a df as expected by plotly
+    dfq = pd.DataFrame(dict(r=normed[0], theta=feature_columns))
+    # a polar plot
+    fig = px.line_polar(dfq, r='r', theta='theta', line_close=True)
+    # look nice plot
+    fig.update_polars(radialaxis_showticklabels=False, radialaxis_showgrid=False)
+    fig.update_traces(fill='toself')
+    # if kwarg is 'div' return a div which can be put in an html doc
+    if kind == 'div':
+        plt_div = plot(fig, output_type='div', include_plotlyjs=False)
+        return plt_div
+    # default kwarg 'png' save png to an images folder, create one if none exist
+    if kind == 'png':
+        if not os.path.exists("images"):
+            os.mkdir("images")
+        
+        fig.write_image(f"images/{image_name}.png", width=300, height=300)
+        return None
