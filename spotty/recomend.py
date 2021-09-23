@@ -1,6 +1,7 @@
 import pandas as pd
 import pickle
 import requests
+import json
 
 from sklearn.neighbors import NearestNeighbors
 from sklearn.preprocessing import Normalizer
@@ -11,8 +12,9 @@ CLIENT_ID = 'ffd61f80a4dd4d7c8fc0c289d994fec0'
 CLIENT_SECRET = '4d2e3a2dc89c45be83eaa5083b9b1b48'
 
 
-def get_nn_query(track_id):
-    """Get spotify request for song audio-features, format it for query_nn()."""
+def spotconnect():
+    """Returns headers for spotify api."""
+
     # get access token
     AUTH_URL = 'https://accounts.spotify.com/api/token'
     # POST
@@ -29,6 +31,15 @@ def get_nn_query(track_id):
 
     # GET song audio-features
     headers = {'Authorization': 'Bearer {token}'.format(token=access_token)}
+    
+    return headers
+
+
+def get_nn_query(track_id):
+    """Get spotify request for song audio-features, format it for query_nn()."""
+
+    headers = spotconnect()
+    
     r = requests.get('https://api.spotify.com/v1/audio-features/' + track_id, headers=headers)
     song_dict = r.json()
     
@@ -75,3 +86,33 @@ def recomend(uri):
         art_tracks[x][0], art_tracks[x][1],
         links[x]] for x in range(5)]
     return recommends, features
+
+
+def search(query):
+    """Searches for song using spotify search api."""
+
+    headers = spotconnect()
+
+    r = requests.get(
+        'https://api.spotify.com/v1/search',
+        headers=headers, params= {
+            'q': query,
+            'type': 'track',
+            'limit': 1
+        }
+    )
+    rs = r.json()
+
+    importante = {
+        'name': rs['tracks']['items'][0]['name'],
+        'artist': rs['tracks']['items'][0]['album']['artists'][0]['name'],
+        'album': rs['tracks']['items'][0]['album']['name'],
+        'imageurl': rs['tracks']['items'][0]['album']['images'][2]['url'],
+        'release': rs['tracks']['items'][0]['album']['release_date'],
+        'url': rs['tracks']['items'][0]['external_urls']['spotify'],
+        'id': rs['tracks']['items'][0]['id']
+    }
+
+    return importante
+
+print(search('mind electric'))
