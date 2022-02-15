@@ -11,7 +11,7 @@ You can find the deployed project at [Spotify Song Suggestor](https://glacial-st
 - Produced a gradient-boosting tree model that recommend songs based on user input of genres and popularity
 - Created visualizations using song data to highlight similarities and differences between recommendations
 - Used animations and visualizations with flask in order to show value to technical and non-technical clients
--
+
 # Research
 Our research into this project stretches far and wide, covering a multitude of libraries. To better consolidate space, you can find our research [here](https://docs.google.com/document/d/1SlY2ig-VE0LyuT09E9C9ZZwuhAe_7jum3lbphLHYZKk/edit)
 
