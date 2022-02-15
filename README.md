@@ -4,9 +4,7 @@ An app that connects users to new music based on their previous music taste.  Ou
 You can find the deployed project at [Spotify Song Suggestor](https://glacial-stream-73052.herokuapp.com).
  
 # Contributors
-[Rico](https://github.com/rodricobsanchez) | [Robert](https://github.com/RCD2020)
-
-[Peter](https://github.com/prockwood) | [Alyssa](https://github.com/dagtag)
+[Rico](https://github.com/rodricobsanchez) | [Robert](https://github.com/RCD2020) | [Peter](https://github.com/prockwood) | [Alyssa](https://github.com/dagtag)
 
 # Key Features
 - Designed an app that utilizing Spotify API in recommending users new songs based on 8 parameters
